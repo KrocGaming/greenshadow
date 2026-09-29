@@ -1,4 +1,4 @@
-import { gsap, ScrollTrigger, useGSAP, splitWords, refreshOnImages } from './motion'
+import { gsap, ScrollTrigger, useGSAP, splitWords, refreshOnImages, introReady, onIntro } from './motion'
 
 /*
  * Declarative scroll animations for a page root. Elements opt in with:
@@ -25,13 +25,15 @@ export function usePageMotion(scope, deps = []) {
 
       const mm = gsap.matchMedia()
       mm.add('(prefers-reduced-motion: no-preference)', () => {
+        // page-entry reveals, held until the preloader lifts on a fresh load
+        const entry = gsap.timeline({ paused: !introReady() })
         q('[data-hero-title]').forEach((el) => {
-          gsap.fromTo(el.querySelectorAll('.w > span'), { yPercent: 110, y: 0 }, { yPercent: 0, y: 0, duration: 1.3, ease: 'expo.out', stagger: 0.06, delay: 0.25, clearProps: 'transform' })
+          entry.fromTo(el.querySelectorAll('.w > span'), { yPercent: 110, y: 0 }, { yPercent: 0, y: 0, duration: 1.3, ease: 'expo.out', stagger: 0.06, clearProps: 'transform' }, 0.25)
         })
         q('[data-hero-media]').forEach((el) => {
-          gsap.fromTo(el, { clipPath: 'inset(18% 8% 0% 8%)' }, { clipPath: 'inset(0% 0% 0% 0%)', duration: 1.6, ease: 'expo.inOut', delay: 0.3 })
+          entry.fromTo(el, { clipPath: 'inset(18% 8% 0% 8%)' }, { clipPath: 'inset(0% 0% 0% 0%)', duration: 1.6, ease: 'expo.inOut' }, 0.3)
           const img = el.querySelector('img')
-          gsap.fromTo(img, { scale: 1.3 }, { scale: 1, duration: 2, ease: 'expo.out', delay: 0.3 })
+          entry.fromTo(img, { scale: 1.3 }, { scale: 1, duration: 2, ease: 'expo.out' }, 0.3)
           gsap.to(img, { yPercent: 12, ease: 'none', scrollTrigger: { trigger: el, start: 'top top', end: 'bottom top', scrub: true } })
         })
 
@@ -49,7 +51,7 @@ export function usePageMotion(scope, deps = []) {
 
         q('[data-reveal]').forEach((el) => {
           if (el.closest('[data-hero]') && !el.closest('[data-hero] [data-reveal-scroll]')) {
-            gsap.fromTo(el, { y: 30, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 1.1, delay: 0.7 })
+            entry.fromTo(el, { y: 30, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 1.1 }, 0.7)
             return
           }
           const targets = el.dataset.reveal === 'stagger' ? el.children : el
@@ -91,6 +93,8 @@ export function usePageMotion(scope, deps = []) {
         q('[data-line]').forEach((el) => {
           gsap.fromTo(el, { scaleX: 0, transformOrigin: 'left center' }, { scaleX: 1, duration: 1.4, ease: 'expo.inOut', scrollTrigger: { trigger: el, start: 'top 92%', once: true } })
         })
+
+        return onIntro(() => entry.play())
       })
 
       // counters run in both modes (reduced: jump to value)

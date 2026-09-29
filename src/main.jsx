@@ -10,6 +10,7 @@ import './styles/layout.css'
 import './styles/home.css'
 import './styles/pages.css'
 import App from './App.jsx'
+import { runLoader } from './lib/loader'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -18,3 +19,5 @@ createRoot(document.getElementById('root')).render(
     </BrowserRouter>
   </StrictMode>,
 )
+
+runLoader()

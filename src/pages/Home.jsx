@@ -1,6 +1,6 @@
-import { useRef } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import { usePageMotion } from '../lib/usePageMotion'
-import { gsap, ScrollTrigger, useGSAP } from '../lib/motion'
+import { gsap, ScrollTrigger, useGSAP, introReady, onIntro } from '../lib/motion'
 import { useSeo } from '../lib/seo'
 import { Photo, Media, Button, TextLink, Eyebrow, CtaBand } from '../components/ui'
 import { TLink } from '../components/Transition'
@@ -20,6 +20,79 @@ const STRIP = [
   { name: 'sack-weigh-a', alt: 'Raw spice poured from a jute sack at a weighing point', cap: 'Weighed at source' },
 ]
 
+/* Brand film on a card tilted back in 3D; the Home timeline swings it upright
+   to full bleed on scroll. Muted, streams only near the viewport and pauses
+   off-screen; reduced-motion visitors get it flat with a play button. */
+function Film() {
+  const video = useRef(null)
+  const [playing, setPlaying] = useState(false)
+  const userPaused = useRef(false)
+
+  useEffect(() => {
+    const v = video.current
+    if (!v) return
+    v.muted = true
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) userPaused.current = true
+    const io = new IntersectionObserver(
+      ([e]) => {
+        if (e.isIntersecting && !userPaused.current) v.play().catch(() => {})
+        else if (!e.isIntersecting) v.pause()
+      },
+      { rootMargin: '200px 0px' },
+    )
+    io.observe(v)
+    return () => io.disconnect()
+  }, [])
+
+  const toggle = () => {
+    const v = video.current
+    if (v.paused) {
+      userPaused.current = false
+      v.play().catch(() => {})
+    } else {
+      userPaused.current = true
+      v.pause()
+    }
+  }
+
+  return (
+    <section className="film" aria-labelledby="film-title">
+      <div className="film__head wrap">
+        <p className="mono">Greenshadow · In motion</p>
+        <h2 id="film-title" className="film__title">
+          Journeys of spice, <em>told in frames.</em>
+        </h2>
+      </div>
+      <div className="film__scene">
+        <div className="film__card">
+          <video
+            ref={video}
+            src="/media/video/greenshadow-720.mp4"
+            poster="/media/video/greenshadow-poster.webp"
+            muted
+            loop
+            playsInline
+            preload="none"
+            disablePictureInPicture
+            aria-hidden="true"
+            onPlay={() => setPlaying(true)}
+            onPause={() => setPlaying(false)}
+          />
+          <div className="film__gloss" aria-hidden="true" />
+          <div className="film__shade" aria-hidden="true" />
+          <div className="film__meta wrap">
+            <p className="film__caption">From the centres of produce — a short film.</p>
+            <button type="button" className="film__toggle" onClick={toggle} aria-label={playing ? 'Pause film' : 'Play film'}>
+              <span className={`film__icon ${playing ? 'is-playing' : ''}`} aria-hidden="true" />
+              <span>{playing ? 'Pause' : 'Play'}</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
 export default function Home() {
   const root = useRef(null)
   useSeo({
@@ -37,12 +110,14 @@ export default function Home() {
 
       /* ---------- HERO intro (all sizes) ---------- */
       mm.add('(prefers-reduced-motion: no-preference)', () => {
-        const intro = gsap.timeline({ delay: 0.15 })
+        // held until the preloader lifts, so the reveal plays in view
+        const intro = gsap.timeline({ delay: 0.15, paused: !introReady() })
         intro
           .fromTo(qa('.hero__line > span'), { yPercent: 115, y: 0 }, { yPercent: 0, y: 0, clearProps: 'transform', duration: 1.4, ease: 'expo.out', stagger: 0.09 })
           .fromTo(q('.hero__frame-in'), { clipPath: 'inset(100% 0% 0% 0%)' }, { clipPath: 'inset(0% 0% 0% 0%)', duration: 1.5, ease: 'expo.inOut' }, 0.1)
           .fromTo(q('.hero__frame img'), { scale: 1.45 }, { scale: 1, duration: 2.6, ease: 'expo.out' }, 0.1)
           .fromTo(qa('.hero__eyebrow > span, .hero__aside > *, .hero__scroll > *'), { autoAlpha: 0, y: 24 }, { autoAlpha: 1, y: 0, stagger: 0.08, duration: 1 }, 0.7)
+        return onIntro(() => intro.play())
       })
 
       /* ---------- HERO pinned expansion (desktop) ---------- */
@@ -59,6 +134,31 @@ export default function Home() {
           .to(qa('.hero__aside, .hero__eyebrow, .hero__scroll'), { autoAlpha: 0, duration: 0.3 }, 0)
           .fromTo(qa('.hero__reveal > *'), { autoAlpha: 0, y: 60 }, { autoAlpha: 1, y: 0, stagger: 0.08, duration: 0.45 }, 0.55)
       })
+
+      /* ---------- Film: tilted card swings upright to full bleed ---------- */
+      mm.add(
+        { motion: '(prefers-reduced-motion: no-preference)', desktop: '(min-width: 1000px)' },
+        (ctx) => {
+          if (!ctx.conditions.motion) return
+          const d = ctx.conditions.desktop
+          const card = q('.film__card')
+          const tl = gsap.timeline({
+            scrollTrigger: { trigger: q('.film'), start: 'top top', end: '+=150%', pin: true, scrub: 1, anticipatePin: 1 },
+          })
+          tl.fromTo(
+            card,
+            { rotateX: d ? 32 : 24, rotateZ: d ? -4 : -2, scale: d ? 0.56 : 0.78, yPercent: d ? 22 : 21, borderRadius: 28 },
+            { rotateX: 0, rotateZ: 0, scale: 1, yPercent: 0, borderRadius: 0, ease: 'power2.inOut', duration: 1 },
+            0,
+          )
+            .fromTo(q('.film__card video'), { scale: 1.2 }, { scale: 1, ease: 'none', duration: 1 }, 0)
+            .to(q('.film__gloss'), { opacity: 0, duration: 0.6 }, 0.3)
+            .to(q('.film__head'), { yPercent: -40, autoAlpha: 0, ease: 'power1.in', duration: 0.6 }, 0.2)
+            .fromTo(q('.film__shade'), { opacity: 0 }, { opacity: 1, duration: 0.25 }, 0.8)
+            .fromTo(qa('.film__meta > *'), { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, stagger: 0.06, duration: 0.25 }, 0.85)
+            .to({}, { duration: 0.2 }) // hold the full-bleed frame before unpinning
+        },
+      )
 
       /* ---------- Sourcing strip: horizontal drift ---------- */
       mm.add('(prefers-reduced-motion: no-preference)', () => {
@@ -209,6 +309,9 @@ export default function Home() {
           </p>
         </div>
       </section>
+
+      {/* ================= FILM ================= */}
+      <Film />
 
       {/* ================= INTRO ================= */}
       <section className="intro" aria-labelledby="intro-title">

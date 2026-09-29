@@ -138,6 +138,133 @@
 }
 
 /* ---------- Intro / statement ---------- */
+/* ---------- Film (tilted card) ---------- */
+.film {
+  position: relative;
+  height: 100vh;
+  height: 100svh;
+  min-height: 560px;
+  background: var(--ink);
+  color: var(--on-dark);
+  overflow: hidden;
+}
+.film__head {
+  position: absolute;
+  inset: calc(var(--nav-h) + 4vh) 0 auto 0;
+  z-index: 1;
+  text-align: center;
+  display: grid;
+  justify-items: center;
+  gap: 16px;
+}
+.film__head .mono { color: var(--gold); }
+.film__title {
+  font-family: var(--f-display);
+  font-weight: 400;
+  font-size: var(--fs-h2);
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+  max-width: 16ch;
+  text-wrap: balance;
+}
+.film__title em { color: var(--olive); }
+.film__scene {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  perspective: 1400px;
+  perspective-origin: 50% 30%;
+}
+.film__card {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: var(--ink-2);
+  transform-origin: 50% 50%;
+  will-change: transform;
+  box-shadow: 0 60px 120px -40px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(239, 234, 223, 0.08);
+}
+.film__card video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+/* screen-glare sheen, fades as the card straightens */
+.film__gloss {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(125deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0) 38%);
+  pointer-events: none;
+}
+.film__shade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(0deg, rgba(14, 21, 16, 0.75) 0%, rgba(14, 21, 16, 0) 45%);
+  opacity: 0;
+  pointer-events: none;
+}
+.film__meta {
+  position: absolute;
+  inset: auto 0 0 0;
+  z-index: 2;
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  gap: 18px var(--gap);
+  padding-bottom: clamp(28px, 6vh, 64px);
+}
+.film__caption {
+  font-family: var(--f-display);
+  font-size: var(--fs-h3);
+  line-height: 1.1;
+  max-width: 22ch;
+}
+@media (prefers-reduced-motion: reduce) {
+  .film { height: auto; min-height: 0; padding: calc(var(--nav-h) + 4vh) 0 0; }
+  .film__head { position: static; margin-bottom: 40px; }
+  .film__scene { position: relative; aspect-ratio: 2 / 1; }
+  .film__gloss { display: none; }
+  .film__shade { opacity: 1; }
+}
+.film__toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 18px;
+  border: 1px solid var(--line-dark);
+  border-radius: 999px;
+  background: rgba(14, 21, 16, 0.35);
+  backdrop-filter: blur(8px);
+  color: var(--on-dark);
+  font-family: var(--f-mono);
+  font-size: var(--fs-meta);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: border-color 0.4s var(--ease), background 0.4s var(--ease);
+}
+.film__toggle:hover { border-color: var(--gold); background: rgba(14, 21, 16, 0.6); }
+.film__toggle:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+/* play triangle / pause bars */
+.film__icon {
+  width: 10px;
+  height: 12px;
+  background: currentColor;
+  clip-path: polygon(0 0, 100% 50%, 0 100%);
+}
+.film__icon.is-playing {
+  clip-path: none;
+  background: none;
+  border-left: 3px solid currentColor;
+  border-right: 3px solid currentColor;
+}
+@media (max-width: 700px) {
+  .film__meta { flex-direction: column; align-items: start; }
+}
+
 .intro { padding-top: clamp(96px, 14vw, 220px); background: var(--paper); overflow: hidden; }
 .intro__statement {
   font-family: var(--f-display);

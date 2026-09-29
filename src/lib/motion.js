@@ -19,10 +19,30 @@ export function startSmoothScroll() {
   lenis.on('scroll', ScrollTrigger.update)
   gsap.ticker.add((t) => lenis.raf(t * 1000))
   gsap.ticker.lagSmoothing(0)
+  if (document.documentElement.classList.contains('ld-on')) lenis.stop() // preloader restarts it
   return lenis
 }
 
 export const getLenis = () => lenis
+
+/* Intro gate: page-entry animations wait until the preloader starts lifting. */
+let introDone = false
+const introWaiters = new Set()
+export const introReady = () => introDone
+export function onIntro(fn) {
+  if (introDone) {
+    fn()
+    return () => {}
+  }
+  introWaiters.add(fn)
+  return () => introWaiters.delete(fn)
+}
+export function releaseIntro() {
+  if (introDone) return
+  introDone = true
+  introWaiters.forEach((fn) => fn())
+  introWaiters.clear()
+}
 
 export function scrollToTop() {
   if (lenis) lenis.scrollTo(0, { immediate: true, force: true })
