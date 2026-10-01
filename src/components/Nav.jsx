@@ -67,7 +67,7 @@ export default function Nav() {
       <header className={`nav ${compact ? 'is-compact' : ''} ${hidden && !open ? 'is-hidden' : ''} ${open ? 'is-open' : ''}`}>
         <div className="nav__inner">
           <TLink to="/" className="nav__logo" aria-label="Greenshadow Agri-Allied — home">
-            <img src="/media/brand/mark.png" alt="" width="40" height="40" />
+            <img src="/media/brand/mark-160.webp" alt="" width="40" height="40" />
             <span className="nav__word">
               <strong>GREENSHADOW</strong>
               <small>Agri-Allied Pvt. Ltd.</small>

@@ -7,7 +7,7 @@ export default function Footer() {
     <footer className="footer">
       <div className="wrap">
         <div className="footer__top">
-          <img className="footer__logo" src="/media/brand/logo-light.png" alt="Greenshadow — The best premium quality products" width="420" height="205" loading="lazy" />
+          <img className="footer__logo" src="/media/brand/logo-light-840.webp" alt="Greenshadow — The best premium quality products" width="420" height="205" loading="lazy" />
           <p className="footer__claim">
             Spices, nuts &amp; masalas —<br />
             <em>from Kerala to global markets.</em>

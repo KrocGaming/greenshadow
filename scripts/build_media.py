@@ -1,8 +1,8 @@
 """Builds optimised web media from the raw files in /assests.
 
-- Photos      -> public/media/photos/<slug>-{800,1600}.webp (colour-graded set in /assests/colour)
+- Photos      -> public/media/photos/<slug>-{480,800,1200,1600}.webp (colour-graded set in /assests/colour)
 - Hero film   -> public/media/video/hero-{wide,tall}.mp4 + hero-poster.webp (from Main_index.mp4)
-- Logo        -> public/media/brand/logo-{dark,light}.png + favicon
+- Logo        -> public/media/brand/logo-{dark,light}.png, small WebP copies for the page + favicon
 - Products    -> public/media/products/<slug>.webp (pack mockups in /assests/greenshadow-product-mockups;
                  lines without a mockup fall back to the brochure crop from gsw.pdf)
 - Certificates-> public/media/certs/<slug>-p<n>-{thumb,full}.webp
@@ -56,6 +56,7 @@ PHOTOS = {
     "boatman-b": "colour/Still 2024-10-09 181903_1.5.5.jpg",
 }
 HERO_VIDEO = "Main_index.mp4"
+PHOTO_WIDTHS = (480, 800, 1200, 1600)  # keep in step with Photo's srcSet in src/components/ui.jsx
 
 # pack mockups: file in /assests/greenshadow-product-mockups -> product slug
 MOCKUPS = {
@@ -89,12 +90,11 @@ def photos():
     d = ensure("photos")
     for slug, f in PHOTOS.items():
         im = ImageOps.exif_transpose(Image.open(os.path.join(SRC, f))).convert("RGB")
-        for w in (800, 1600):
+        for w in PHOTO_WIDTHS:
             c = im.copy()
             if c.width > w:
                 c = c.resize((w, round(c.height * w / c.width)), Image.LANCZOS)
-            c.save(os.path.join(d, f"{slug}-{w}.webp"), "WEBP", quality=78 if w > 800 else 72, method=6)
-        # tiny blurred placeholder colour
+            c.save(os.path.join(d, f"{slug}-{w}.webp"), "WEBP", quality=70, method=6)
     print("photos ok")
 
 
@@ -106,7 +106,7 @@ def hero_video():
     d = ensure("video")
     src = os.path.join(SRC, HERO_VIDEO)
     # wide: full frame; tall: centre 3:4 crop for portrait screens (the subject stays centred)
-    for name, vf, crf in (("wide", "scale=1280:-2", 22), ("tall", "crop=540:720", 23)):
+    for name, vf, crf in (("wide", "scale=1280:-2", 26), ("tall", "crop=540:720", 27)):
         subprocess.run(
             [ff, "-hide_banner", "-loglevel", "error", "-y", "-i", src, "-an", "-vf", vf,
              "-c:v", "libx264", "-preset", "slow", "-crf", str(crf), "-g", "1", "-bf", "0",
@@ -164,6 +164,12 @@ def logo():
     sq = Image.new("RGBA", (side, side), (0, 0, 0, 0))
     sq.paste(mark, ((side - mark.width) // 2, (side - mark.height) // 2), mark)
     sq.save(os.path.join(d, "mark.png"), optimize=True)
+    # what the page actually loads: the mark is shown at 40-72 px, the footer logo at 420 px
+    sq.resize((160, 160), Image.LANCZOS).save(os.path.join(d, "mark-160.webp"), "WEBP", quality=90, method=6)
+    lw = Image.fromarray(light.astype(np.uint8))
+    if lw.width > 840:
+        lw = lw.resize((840, round(lw.height * 840 / lw.width)), Image.LANCZOS)
+    lw.save(os.path.join(d, "logo-light-840.webp"), "WEBP", quality=88, method=6)
     sq.resize((64, 64), Image.LANCZOS).save(os.path.join(ROOT, "public", "favicon.png"))
     sq.resize((180, 180), Image.LANCZOS).save(os.path.join(ROOT, "public", "apple-touch-icon.png"))
     # OG image
@@ -222,11 +228,11 @@ def mockups():
     def tile(im, slug):
         side = round(im.height * 0.92)
         x, y = (im.width - side) // 2, (im.height - side) // 2
-        sq = im.crop((x, y, x + side, y + side)).resize((1000, 1000), Image.LANCZOS)
-        sq.save(os.path.join(d, f"{slug}.webp"), "WEBP", quality=84, method=6)
+        sq = im.crop((x, y, x + side, y + side)).resize((720, 720), Image.LANCZOS)
+        sq.save(os.path.join(d, f"{slug}.webp"), "WEBP", quality=78, method=6)
         # uncropped frame for wide slots (process stages), where a square would clip the pack
         wide = im.resize((1600, round(im.height * 1600 / im.width)), Image.LANCZOS) if im.width > 1600 else im
-        wide.save(os.path.join(d, f"{slug}-wide.webp"), "WEBP", quality=80, method=6)
+        wide.save(os.path.join(d, f"{slug}-wide.webp"), "WEBP", quality=74, method=6)
 
     for name, slug in MOCKUPS.items():
         tile(Image.open(os.path.join(SRC, "greenshadow-product-mockups", f"{name}.jpg")).convert("RGB"), slug)

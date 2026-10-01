@@ -64,7 +64,7 @@ export function TransitionProvider({ children }) {
       {children}
       <div className="pt" ref={root} aria-hidden="true">
         <div className="pt__panel">
-          <img className="pt__mark" src="/media/brand/mark.png" alt="" width="72" height="72" />
+          <img className="pt__mark" src="/media/brand/mark-160.webp" alt="" width="72" height="72" />
         </div>
       </div>
     </TransitionCtx.Provider>

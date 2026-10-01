@@ -2,6 +2,7 @@ import { useRef, useState, useEffect } from 'react'
 import { usePageMotion } from '../lib/usePageMotion'
 import { gsap, ScrollTrigger, useGSAP, introReady, onIntro } from '../lib/motion'
 import { useSeo } from '../lib/seo'
+import { loadHeroFilm, heroFilmUrl } from '../lib/heroFilm'
 import { Photo, Media, Button, TextLink, Eyebrow, CtaBand } from '../components/ui'
 import { TLink } from '../components/Transition'
 import { stats, process, facilityStatus, sourcing } from '../data/company'
@@ -208,18 +209,11 @@ export default function Home() {
         }
         const pen = { film: 0, a: 0, b: 0, c: 0 }
 
-        // the whole file is fetched up front so every seek is served from memory
-        const url = `/media/video/hero-${window.matchMedia('(max-aspect-ratio: 3/4)').matches ? 'tall' : 'wide'}.mp4`
-        let blob = null
+        // the whole file sits in memory (the preloader waited for it), so every seek is instant
         let dead = false
-        fetch(url)
-          .then((r) => (r.ok ? r.blob() : Promise.reject(r.status)))
-          .then((b) => {
-            if (dead) return
-            blob = URL.createObjectURL(b)
-            v.src = blob
-          })
-          .catch(() => !dead && (v.src = url))
+        loadHeroFilm()
+          .then((url) => !dead && (v.src = url))
+          .catch(() => !dead && (v.src = heroFilmUrl()))
         // seeks are queued: one at a time, always toward the latest scroll position
         const seek = () => {
           if (!v.duration || v.seeking) return
@@ -282,7 +276,6 @@ export default function Home() {
           window.removeEventListener('touchstart', prime)
           v.removeAttribute('src')
           v.load()
-          if (blob) URL.revokeObjectURL(blob)
         }
       })
 

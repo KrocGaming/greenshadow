@@ -16,14 +16,15 @@ const FOCUS = {
   'turmeric-gateway': '48% 38%',
 }
 
-/* Responsive photo from /media/photos (800w + 1600w WebP). */
+/* Responsive photo from /media/photos (480–1600w WebP; the browser picks the smallest that fits). */
+const WIDTHS = [480, 800, 1200, 1600]
 export function Photo({ name, alt, sizes = '100vw', priority = false, className = '', ...rest }) {
   const base = `/media/photos/${name}`
   return (
     <img
       className={className}
       src={`${base}-800.webp`}
-      srcSet={`${base}-800.webp 800w, ${base}-1600.webp 1600w`}
+      srcSet={WIDTHS.map((w) => `${base}-${w}.webp ${w}w`).join(', ')}
       sizes={sizes}
       alt={alt}
       loading={priority ? 'eager' : 'lazy'}

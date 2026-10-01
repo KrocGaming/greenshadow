@@ -33,6 +33,12 @@
       #loader .ld__word { display: flex; overflow: hidden; font-family: 'Instrument Serif', 'Times New Roman', serif; font-size: clamp(2.6rem, 7vw, 6rem); line-height: 1.05; letter-spacing: -0.02em; padding: 0 0.05em; }
       #loader .ld__word span { display: block; animation: ld-rise 1.1s cubic-bezier(0.19, 1, 0.22, 1) both; animation-delay: calc(0.15s + var(--i) * 0.04s); }
       #loader .ld__word em { display: flex; color: #f0a820; }
+      #loader .ld__status { display: grid; justify-items: center; gap: 6px; margin-top: 10px; text-align: center; animation: ld-fade 0.8s 0.6s both; }
+      #loader .ld__step { display: flex; align-items: center; gap: 12px; margin: 0; overflow: hidden; font-family: 'Instrument Serif', 'Times New Roman', serif; font-style: italic; font-size: clamp(1.35rem, 2.1vw, 2rem); line-height: 1.25; color: #efeadf; }
+      #loader .ld__step i { flex: none; width: 6px; height: 6px; background: #f0a820; animation: ld-pulse 1.1s ease-in-out infinite; }
+      #loader .ld__step span { display: block; }
+      #loader .ld__step span::after { content: ''; display: inline-block; width: 1.6em; text-align: left; animation: ld-dots 1.4s steps(1) infinite; }
+      #loader .ld__note { margin: 0; font-size: 0.64rem; letter-spacing: 0.12em; text-transform: uppercase; color: #a3ab9f; }
       #loader .ld__foot { grid-row: 3; align-self: end; width: 100%; display: flex; justify-content: space-between; align-items: end; gap: 16px; }
       #loader .ld__meta { overflow: hidden; font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: #a3ab9f; }
       #loader .ld__meta span { display: block; animation: ld-rise 1s 0.5s cubic-bezier(0.19, 1, 0.22, 1) both; }
@@ -41,6 +47,9 @@
       #loader .ld__bar { position: absolute; left: 0; right: 0; bottom: 0; height: 2px; background: rgba(239, 234, 223, 0.12); }
       #loader .ld__bar i { display: block; height: 100%; background: #f0a820; transform: scaleX(0); transform-origin: left center; }
       @keyframes ld-rise { from { transform: translateY(110%); } }
+      @keyframes ld-fade { from { opacity: 0; } }
+      @keyframes ld-pulse { 50% { opacity: 0.25; transform: scale(0.6); } }
+      @keyframes ld-dots { 0% { content: ''; } 25% { content: '.'; } 50% { content: '..'; } 75% { content: '...'; } }
       @keyframes ld-mark { from { opacity: 0; transform: scale(0.6) rotate(-25deg); } }
       @media (max-width: 560px) { #loader .ld__meta span + span { display: none; } }
       @media (prefers-reduced-motion: reduce) { #loader * { animation: none !important; } }
@@ -75,8 +84,12 @@
       <div class="ld__panel ld__panel--ink">
         <div class="ld__inner">
           <div class="ld__center">
-            <img class="ld__mark" src="/media/brand/mark.png" alt="" width="64" height="64" />
+            <img class="ld__mark" src="/media/brand/mark-160.webp" alt="" width="64" height="64" />
             <p class="ld__word"><span style="--i:0">G</span><span style="--i:1">r</span><span style="--i:2">e</span><span style="--i:3">e</span><span style="--i:4">n</span><em><span style="--i:5">s</span><span style="--i:6">h</span><span style="--i:7">a</span><span style="--i:8">d</span><span style="--i:9">o</span><span style="--i:10">w</span></em></p>
+            <div class="ld__status">
+              <p class="ld__step"><i></i><span>Gathering the harvest</span></p>
+              <p class="ld__note">Loading the film &amp; photographs</p>
+            </div>
           </div>
           <div class="ld__foot">
             <div class="ld__meta"><span>Spices · Nuts · Masalas</span><span>Thiruvananthapuram, Kerala</span></div>

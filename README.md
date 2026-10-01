@@ -37,5 +37,6 @@ All company facts live in `src/data/` and are taken from the documents in `asses
 
 - `src/pages/` – Home, About, Process, Facility, Products, Markets, Quality, Certifications, Contact, 404
 - `src/lib/usePageMotion.js` – declarative scroll animations (`data-split`, `data-reveal`, `data-clip`, `data-parallax`, …). With `prefers-reduced-motion`, content shows in its final state.
+- `src/lib/loader.js` + `src/lib/heroFilm.js` – first-load preloader. On the home page it stays up until the hero film has fully downloaded (25 s cap), with the counter following the real download.
 - `scripts/build_media.py` – WebP conversion, logo variants, brochure product crops, certificate renders and redaction
 - SPA rewrites for hosting: `public/_redirects` (Netlify), `vercel.json` (Vercel)
