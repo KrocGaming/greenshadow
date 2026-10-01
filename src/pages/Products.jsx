@@ -4,7 +4,7 @@ import { gsap, ScrollTrigger, useGSAP } from '../lib/motion'
 import { useSeo } from '../lib/seo'
 import { PageHero, Eyebrow, CtaBand, Arrow, TextLink } from '../components/ui'
 import { TLink } from '../components/Transition'
-import { products, collections, productImg } from '../data/products'
+import { products, collections, productImg, productCls } from '../data/products'
 
 export default function Products() {
   const root = useRef(null)
@@ -28,6 +28,7 @@ export default function Products() {
     { scope: grid, dependencies: [filter] },
   )
 
+  const isPack = (p) => productCls(p.slug) !== '' || p.spec?.startsWith('Pack')
   const count = (id) => (id === 'all' ? products.length : products.filter((p) => p.col === id).length)
 
   return (
@@ -56,7 +57,7 @@ export default function Products() {
             <li className="pcard" key={p.slug}>
               <article>
                 <div className="pcard__media">
-                  <img src={productImg(p.slug)} alt={`${p.name}${p.spec?.startsWith('Pack') ? ' — Greenshadow retail pack' : ''}`} loading="lazy" decoding="async" />
+                  <img className={productCls(p.slug)} src={productImg(p.slug)} alt={`${p.name}${isPack(p) ? ' — Greenshadow retail pack' : ''}`} loading="lazy" decoding="async" />
                   <span className="pcard__i mono">{String(i + 1).padStart(2, '0')}</span>
                 </div>
                 <div className="pcard__body">
@@ -105,7 +106,7 @@ export default function Products() {
         </div>
       </section>
 
-      <CtaBand title="Need a quote?" body="Tell us the product, grade and quantity you are looking for — for domestic trade or export." image="spice-bowl" imageAlt="Ground spice heaped in a decorated bowl" />
+      <CtaBand title="Need a quote?" body="Tell us the product, grade and quantity you are looking for — for domestic trade or export." image="seed-pots" imageAlt="Three clay pots heaped with whole seed spice" />
     </div>
   )
 }

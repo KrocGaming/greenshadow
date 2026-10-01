@@ -3,6 +3,8 @@
  * in the company brochure (gsw.pdf, pages 3–4). Descriptions are plain,
  * generic definitions of each spice; no grades, origins or specifications
  * are claimed beyond what the brochure states.
+ * Images are the pack mockups (dark studio tiles); the two lines without a
+ * mockup still use their brochure photo.
  */
 
 export const collections = [
@@ -35,3 +37,8 @@ export const products = [
 ]
 
 export const productImg = (slug) => `/media/products/${slug}.webp`
+
+const BROCHURE_ONLY = new Set(['coffee-powder', 'tea-powder'])
+export const isMockup = (slug) => !BROCHURE_ONLY.has(slug)
+/* Class for a product <img>: mockups fill their tile, brochure photos sit on paper. */
+export const productCls = (slug) => (isMockup(slug) ? 'is-mockup' : '')

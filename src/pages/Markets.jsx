@@ -23,8 +23,8 @@ export default function Markets() {
         title={<>Where our spices <em>go.</em></>}
         lead="Export sales, domestic wholesale and retail, and B2B supply — backed by the registrations each channel requires."
         meta={[['Exporter type', 'Merchant cum manufacturer'], ['Focus markets', 'USA · UAE']]}
-        image="truck-loading"
-        imageAlt="A worker loads a jute sack onto a truck stacked with sacks"
+        image="turmeric-gateway"
+        imageAlt="A woman lets turmeric powder fall into a bowl on a harbour wall, the Gateway of India behind her at sunset"
       />
 
       {/* Channels */}

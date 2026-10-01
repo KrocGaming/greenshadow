@@ -50,8 +50,8 @@ export default function Facility() {
         title={<>Own land. <em>Own facility.</em></>}
         lead="Factory development is substantially complete and the company is approaching commercial operational readiness, with the formal launch targeted for September 2026."
         meta={[['Location', 'Anavoor, TVM'], ['To Vizhinjam', '≈25 km'], ['Rent', 'None']]}
-        image="sack-weigh-a"
-        imageAlt="A worker pours raw spice from a jute sack beside a digital weighing scale inside a processing shed"
+        image="truck-loading"
+        imageAlt="A worker carries a jute sack onto a truck stacked high with sacks"
       />
 
       {/* Built progression */}
@@ -76,7 +76,7 @@ export default function Facility() {
       <section className="fstatus">
         <div className="wrap fstatus__grid">
           <div className="fstatus__media" data-clip>
-            <Photo name="sack-weigh-b" alt="Raw spice poured from a jute sack at the weighing point" sizes="(min-width: 900px) 42vw, 90vw" />
+            <Photo name="seed-heap" alt="A hand lifts a sample from a heap of seed, with stacked sacks behind" sizes="(min-width: 900px) 42vw, 90vw" />
           </div>
           <div>
             <Eyebrow index="02" tone="light">Current status</Eyebrow>
@@ -136,7 +136,7 @@ export default function Facility() {
         </div>
       </section>
 
-      <CtaBand title="Visit the facility." body="Anavoor, Thiruvananthapuram, Kerala. Get in touch to arrange a visit or discuss a sourcing partnership." image="truck-loading" imageAlt="Sacks being loaded onto a truck" />
+      <CtaBand title="Visit the facility." body="Anavoor, Thiruvananthapuram, Kerala. Get in touch to arrange a visit or discuss a sourcing partnership." image="turmeric-field" imageAlt="Rows of broad-leaved turmeric plants stretching to the horizon" />
     </div>
   )
 }

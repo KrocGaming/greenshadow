@@ -37,8 +37,8 @@ export default function Quality() {
         label="Quality"
         title={<>Quality, checked at <em>every stage.</em></>}
         lead="Quality is not a final inspection at Greenshadow — it starts where the spice is bought and continues through every step until it is sealed in the pack."
-        image="grain-check-c"
-        imageAlt="Grain streaming from one hand to another during inspection"
+        image="turmeric-farmer-b"
+        imageAlt="A farmer inspects the leaves of turmeric plants in the field"
       />
 
       <section className="qphil wrap">
@@ -51,7 +51,7 @@ export default function Quality() {
 
       <section className="qchecks wrap">
         <div className="qchecks__media" data-parallax="0.12">
-          <Photo name="sack-weigh-b" alt="Raw spice being emptied from a sack at a weighing point" sizes="(min-width: 900px) 40vw, 90vw" />
+          <Photo name="paddy-inspect-a" alt="A farmer bends to examine ripening grain heads in the field" sizes="(min-width: 900px) 40vw, 90vw" />
         </div>
         <div>
           <Eyebrow index="02">Checkpoints</Eyebrow>
@@ -116,7 +116,7 @@ export default function Quality() {
         </ol>
       </section>
 
-      <CtaBand title="Talk quality with us." body="Questions about grades, specifications or documentation? Contact us before you order." image="turmeric-b" imageAlt="A woman sprinkles turmeric powder beside a bowl of fresh turmeric" />
+      <CtaBand title="Talk quality with us." body="Questions about grades, specifications or documentation? Contact us before you order." image="spice-bowl-hills" imageAlt="Ground spice heaped in a decorated bowl on a wall above misty hills" />
     </div>
   )
 }

@@ -1,8 +1,10 @@
 """Builds optimised web media from the raw files in /assests.
 
-- Photos      -> public/media/photos/<slug>-{800,1600}.webp
+- Photos      -> public/media/photos/<slug>-{800,1600}.webp (colour-graded set in /assests/colour)
+- Hero film   -> public/media/video/hero-{wide,tall}.mp4 + hero-poster.webp (from Main_index.mp4)
 - Logo        -> public/media/brand/logo-{dark,light}.png + favicon
-- Products    -> public/media/products/<slug>.webp (cropped from the brochure, gsw.pdf)
+- Products    -> public/media/products/<slug>.webp (pack mockups in /assests/greenshadow-product-mockups;
+                 lines without a mockup fall back to the brochure crop from gsw.pdf)
 - Certificates-> public/media/certs/<slug>-p<n>-{thumb,full}.webp
 
 Personal data is never published: FSSAI page with Aadhaar details and the
@@ -10,6 +12,7 @@ APEDA application pages with bank / residential details are skipped, and the
 bank account line on the SBI AD-code letter is redacted.
 """
 import os
+import subprocess
 import fitz
 import numpy as np
 from PIL import Image, ImageDraw, ImageOps
@@ -20,24 +23,58 @@ CERTS = os.path.join(SRC, "certificates")
 OUT = os.path.join(ROOT, "public", "media")
 
 PHOTOS = {
-    "girl-portrait": "WhatsApp Image 2026-09-27 at 5.24.24 PM (1).jpeg",
-    "boatman-a": "WhatsApp Image 2026-09-27 at 5.24.25 PM (1).jpeg",
-    "boatman-b": "WhatsApp Image 2026-09-27 at 5.24.25 PM (2).jpeg",
-    "girl-green": "WhatsApp Image 2026-09-27 at 5.24.25 PM.jpeg",
-    "spice-bowl": "WhatsApp Image 2026-09-27 at 5.26.28 PM.jpeg",
-    "farmer-field": "WhatsApp Image 2026-09-27 at 5.26.29 PM (1).jpeg",
-    "farmer-inspect": "WhatsApp Image 2026-09-27 at 5.26.29 PM (2).jpeg",
-    "hands-bowl": "WhatsApp Image 2026-09-27 at 5.26.29 PM.jpeg",
-    "elder-hills": "WhatsApp Image 2026-09-27 at 5.26.30 PM (1).jpeg",
-    "turmeric-a": "WhatsApp Image 2026-09-27 at 5.26.30 PM (2).jpeg",
-    "nutmeg-mace": "WhatsApp Image 2026-09-27 at 5.26.30 PM.jpeg",
-    "truck-loading": "WhatsApp Image 2026-09-27 at 5.26.31 PM (1).jpeg",
-    "grain-check-a": "WhatsApp Image 2026-09-27 at 5.26.31 PM (2).jpeg",
-    "turmeric-b": "WhatsApp Image 2026-09-27 at 5.26.31 PM.jpeg",
-    "grain-check-b": "WhatsApp Image 2026-09-27 at 5.26.32 PM (1).jpeg",
-    "grain-check-c": "WhatsApp Image 2026-09-27 at 5.26.32 PM.jpeg",
-    "sack-weigh-a": "WhatsApp Image 2026-09-27 at 5.26.33 PM (1).jpeg",
-    "sack-weigh-b": "WhatsApp Image 2026-09-27 at 5.26.33 PM.jpeg",
+    "pepper-picker": "colour/DSC00068 (1).jpg",
+    "pepper-vines": "colour/DSC00074 (1).jpg",
+    "turmeric-field": "colour/DSC00090 (1).jpg",
+    "turmeric-plants": "colour/DSC00096 (1).jpg",
+    "turmeric-farmer-a": "colour/DSC00111 (1).jpg",
+    "turmeric-gateway": "colour/DSC00111.png",
+    "turmeric-farmer-b": "colour/DSC00112 (1).jpg",
+    "chilli-kashmir": "colour/DSC00222.jpg",
+    "truck-loading": "colour/DSC00228.jpg",
+    "seed-heap": "colour/DSC00237 (1).jpg",
+    "seed-pour": "colour/DSC00245 (1).jpg",
+    "grain-heap": "colour/DSC00298 (1).jpg",
+    "spice-bowl-hills": "colour/DSC00333.jpg",
+    "winnow-a": "colour/DSC00341 (1).jpg",
+    "winnow-b": "colour/DSC00345 (1).jpg",
+    "seed-pot": "colour/DSC00369 (1).jpg",
+    "seed-pots": "colour/DSC00373 (1).jpg",
+    "harvest-a": "colour/DSC00378 (1).jpg",
+    "harvest-b": "colour/DSC00379 (1).jpg",
+    "paddy-inspect-a": "colour/DSC00409 (1).jpg",
+    "paddy-inspect-b": "colour/DSC00415 (1).jpg",
+    "paddy": "colour/DSC00450 (1).jpg",
+    "chilli-girl-a": "colour/DSC00547.jpg",
+    "chilli-girl-b": "colour/DSC00558 (1).jpg",
+    "spice-pinch": "colour/DSC00577 (3).jpg",
+    "chilli-sorting": "colour/DSC00691 (2).jpg",
+    "elder-tractor": "colour/Still 2024-09-30 235647_1.1.4.png",
+    "girl-portrait": "colour/Still 2024-10-09 152429_1.7.2.jpg",
+    "girl-green": "colour/Still 2024-10-09 165042_1.6.1.jpg",
+    "boatman-a": "colour/Still 2024-10-09 181716_1.5.5.jpg",
+    "boatman-b": "colour/Still 2024-10-09 181903_1.5.5.jpg",
+}
+HERO_VIDEO = "Main_index.mp4"
+
+# pack mockups: file in /assests/greenshadow-product-mockups -> product slug
+MOCKUPS = {
+    "01-coriander-powder": "coriander-powder",
+    "02-turmeric-powder": "turmeric-powder",
+    "03-garam-masala": "garam-masala",
+    "04-fish-masala": "fish-masala",
+    "05-chicken-masala": "chicken-masala",
+    "06-meat-masala": "meat-masala",
+    "07-black-pepper": "black-pepper",
+    "08-white-pepper": "white-pepper",
+    "09-cardamom": "cardamom",
+    "10-chukku": "chukku",
+    "11-clove": "clove",
+    "12-cinnamon": "cinnamon-sticks",
+    "13-star-anise": "anise-stars",
+    "14-nutmeg-mace": "nutmace",
+    "15-garam-masala-whole": "garam-masala-whole",
+    "16-cashew-nuts": "cashew-nuts",
 }
 LOGO = "WhatsApp Image 2026-09-27 at 5.24.24 PM.jpeg"
 
@@ -59,6 +96,28 @@ def photos():
             c.save(os.path.join(d, f"{slug}-{w}.webp"), "WEBP", quality=78 if w > 800 else 72, method=6)
         # tiny blurred placeholder colour
     print("photos ok")
+
+
+def hero_video():
+    """Scroll-scrubbed hero film: every frame is a keyframe so seeking is instant."""
+    import imageio_ffmpeg
+
+    ff = imageio_ffmpeg.get_ffmpeg_exe()
+    d = ensure("video")
+    src = os.path.join(SRC, HERO_VIDEO)
+    # wide: full frame; tall: centre 3:4 crop for portrait screens (the subject stays centred)
+    for name, vf, crf in (("wide", "scale=1280:-2", 22), ("tall", "crop=540:720", 23)):
+        subprocess.run(
+            [ff, "-hide_banner", "-loglevel", "error", "-y", "-i", src, "-an", "-vf", vf,
+             "-c:v", "libx264", "-preset", "slow", "-crf", str(crf), "-g", "1", "-bf", "0",
+             "-pix_fmt", "yuv420p", "-movflags", "+faststart", os.path.join(d, f"hero-{name}.mp4")],
+            check=True,
+        )
+    png = os.path.join(d, "hero-poster.png")
+    subprocess.run([ff, "-hide_banner", "-loglevel", "error", "-y", "-i", src, "-frames:v", "1", png], check=True)
+    Image.open(png).convert("RGB").save(os.path.join(d, "hero-poster.webp"), "WEBP", quality=80, method=6)
+    os.remove(png)
+    print("hero video ok")
 
 
 def logo():
@@ -156,6 +215,36 @@ def products():
     print("products ok")
 
 
+def mockups():
+    """Square tiles cut around the pack (plus a wide frame); they replace the brochure crops of the same slug."""
+    d = ensure("products")
+
+    def tile(im, slug):
+        side = round(im.height * 0.92)
+        x, y = (im.width - side) // 2, (im.height - side) // 2
+        sq = im.crop((x, y, x + side, y + side)).resize((1000, 1000), Image.LANCZOS)
+        sq.save(os.path.join(d, f"{slug}.webp"), "WEBP", quality=84, method=6)
+        # uncropped frame for wide slots (process stages), where a square would clip the pack
+        wide = im.resize((1600, round(im.height * 1600 / im.width)), Image.LANCZOS) if im.width > 1600 else im
+        wide.save(os.path.join(d, f"{slug}-wide.webp"), "WEBP", quality=80, method=6)
+
+    for name, slug in MOCKUPS.items():
+        tile(Image.open(os.path.join(SRC, "greenshadow-product-mockups", f"{name}.jpg")).convert("RGB"), slug)
+
+    # no chilli mockup was supplied: the hero film ends on the chilli pack, so its last frame is used
+    import imageio_ffmpeg
+
+    png = os.path.join(d, "chilli-frame.png")
+    subprocess.run(
+        [imageio_ffmpeg.get_ffmpeg_exe(), "-hide_banner", "-loglevel", "error", "-y", "-sseof", "-0.3",
+         "-i", os.path.join(SRC, HERO_VIDEO), "-frames:v", "1", png],
+        check=True,
+    )
+    tile(Image.open(png).convert("RGB"), "chilli-powder")
+    os.remove(png)
+    print("mockups ok")
+
+
 CERT_PAGES = {
     "incorporation": ("incorporation certificate.pdf", [0]),
     "iec": ("IE certificate.pdf", [0]),
@@ -198,6 +287,8 @@ def certs():
 
 if __name__ == "__main__":
     photos()
+    hero_video()
     logo()
     products()
+    mockups()
     certs()

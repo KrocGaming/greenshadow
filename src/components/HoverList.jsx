@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { gsap } from '../lib/motion'
-import { productImg } from '../data/products'
+import { productImg, productCls } from '../data/products'
 import { TLink } from './Transition'
 import { Arrow } from './ui'
 
@@ -33,7 +33,7 @@ export default function HoverList({ items, title }) {
           <li key={p.slug} onPointerEnter={() => setActive(p.slug)}>
             <TLink to="/products" className="hlist__row" onFocus={() => setActive(p.slug)} onBlur={() => setActive(null)}>
               <span className="hlist__i">{String(i + 1).padStart(2, '0')}</span>
-              <img className="hlist__thumb" src={productImg(p.slug)} alt="" loading="lazy" decoding="async" />
+              <img className={`hlist__thumb ${productCls(p.slug)}`} src={productImg(p.slug)} alt="" loading="lazy" decoding="async" />
               <span className="hlist__name">{p.name}</span>
               <span className="hlist__meta">{p.spec ?? p.format}</span>
               <Arrow />

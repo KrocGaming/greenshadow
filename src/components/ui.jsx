@@ -1,6 +1,20 @@
 import { useRef, useEffect } from 'react'
 import { TLink } from './Transition'
 import { gsap } from '../lib/motion'
+import { isMockup } from '../data/products'
+
+/* Where the subject sits in photos that are off-centre, so cover crops keep it. */
+const FOCUS = {
+  'boatman-a': '62% 50%',
+  'chilli-girl-b': '55% 30%',
+  'elder-tractor': '74% 40%',
+  'grain-heap': '50% 30%',
+  'harvest-a': '38% 50%',
+  'spice-bowl-hills': '68% 55%',
+  'truck-loading': '50% 30%',
+  'turmeric-farmer-a': '62% 38%',
+  'turmeric-gateway': '48% 38%',
+}
 
 /* Responsive photo from /media/photos (800w + 1600w WebP). */
 export function Photo({ name, alt, sizes = '100vw', priority = false, className = '', ...rest }) {
@@ -15,6 +29,7 @@ export function Photo({ name, alt, sizes = '100vw', priority = false, className 
       loading={priority ? 'eager' : 'lazy'}
       fetchPriority={priority ? 'high' : undefined}
       decoding="async"
+      style={FOCUS[name] && { objectPosition: FOCUS[name] }}
       {...rest}
     />
   )
@@ -23,7 +38,9 @@ export function Photo({ name, alt, sizes = '100vw', priority = false, className 
 /* Resolves "product:slug" or a photo name. */
 export function Media({ src, alt, sizes, className, priority }) {
   if (src.startsWith('product:')) {
-    return <img className={`${className ?? ''} is-product`} src={`/media/products/${src.slice(8)}.webp`} alt={alt} loading="lazy" decoding="async" />
+    const slug = src.slice(8)
+    const mock = isMockup(slug)
+    return <img className={`${className ?? ''} is-product ${mock ? 'is-mockup' : ''}`} src={`/media/products/${slug}${mock ? '-wide' : ''}.webp`} alt={alt} loading="lazy" decoding="async" />
   }
   return <Photo name={src} alt={alt} sizes={sizes} className={className} priority={priority} />
 }
@@ -148,7 +165,7 @@ export function PageHero({ index, label, title, lead, image, imageAlt, tone = 'd
   )
 }
 
-export function CtaBand({ title = 'Source with Greenshadow.', body, image = 'farmer-field', imageAlt = 'A farmer carries a harvested bundle across a green field' }) {
+export function CtaBand({ title = 'Source with Greenshadow.', body, image = 'harvest-a', imageAlt = 'A farmer carries a harvested sheaf across a green field' }) {
   return (
     <section className="cta" aria-labelledby="cta-title">
       <div className="cta__media" data-parallax="0.18">

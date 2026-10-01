@@ -5,27 +5,74 @@ import { useSeo } from '../lib/seo'
 import { Photo, Media, Button, TextLink, Eyebrow, CtaBand } from '../components/ui'
 import { TLink } from '../components/Transition'
 import { stats, process, facilityStatus, sourcing } from '../data/company'
-import { products, productImg } from '../data/products'
+import { products, productImg, productCls } from '../data/products'
 import { certificates } from '../data/certificates'
 import RouteDiagram from '../components/RouteDiagram'
 import HoverList from '../components/HoverList'
 
 const STRIP = [
-  { name: 'nutmeg-mace', alt: 'A smiling grower holds a leaf-lined basket of fresh nutmeg and mace', cap: 'Nutmeg & mace' },
-  { name: 'farmer-inspect', alt: 'A farmer inspects ripening grain in the field', cap: 'At the field' },
-  { name: 'elder-hills', alt: 'An elderly woman in the hills holds a string of beads', cap: 'Hill communities' },
-  { name: 'turmeric-b', alt: 'A woman holds fresh turmeric beside a bowl of turmeric powder', cap: 'Turmeric' },
+  { name: 'chilli-girl-a', alt: 'A smiling girl holds a thick garland of fresh red chillies', cap: 'Red chilli' },
+  { name: 'paddy-inspect-b', alt: 'A farmer in a blue turban inspects ripening grain in the field', cap: 'At the field' },
   { name: 'boatman-a', alt: 'An elderly boatman rows a traditional wooden boat', cap: 'Across regions' },
-  { name: 'girl-green', alt: 'A young girl from a producer community', cap: 'Producer families' },
-  { name: 'sack-weigh-a', alt: 'Raw spice poured from a jute sack at a weighing point', cap: 'Weighed at source' },
+  { name: 'pepper-picker', alt: 'A woman reaches into the leaves of a pepper vine to pick by hand', cap: 'Pepper vines' },
+  { name: 'seed-pot', alt: 'A clay pot heaped with whole seed spice on a stone ledge', cap: 'Seed spices' },
+  { name: 'elder-tractor', alt: 'An elderly grower with a long white beard stands beside a tractor', cap: 'Grower communities' },
+  { name: 'paddy', alt: 'Grain heads ripening on tall green stalks', cap: 'In the field' },
+  { name: 'winnow-a', alt: 'A woman winnows seed in a bamboo tray against a blue-washed wall', cap: 'Winnowed by hand' },
+  { name: 'turmeric-field', alt: 'Rows of broad-leaved turmeric plants stretching to the horizon', cap: 'Turmeric' },
 ]
 
+/* Hero chapters, one per act of the hero film (grower → grinding → pack).
+   Read together the three headlines make the page's h1. */
+const CHAPTERS = [
+  {
+    kicker: '01 · Sourced',
+    lines: [[['From the centres', false]], [['of ', false], ['produce,', true]]],
+    body: 'Spices, nuts and masalas — sourced directly from growers and producer communities across India.',
+  },
+  {
+    kicker: '02 · Processed',
+    lines: [[['ground in our', false]], [['own facility,', true]]],
+    body: 'Cleaned, graded and low-temperature ground in our own facility in Thiruvananthapuram, Kerala.',
+  },
+  {
+    kicker: '03 · Packed',
+    lines: [[['to ', false], ['global', true]], [['markets.', false]]],
+    body: 'Sealed for freshness and dispatched about 25 km from Vizhinjam International Seaport.',
+  },
+]
+
+/* Headline set one character at a time, so the hero timeline can "write" it
+   by switching characters on in order. Words stay unbreakable. */
+function Written({ lines }) {
+  return lines.map((line, i) => (
+    <span className="hero__wline" key={i}>
+      {line.map(([text, em], j) => {
+        const words = text.split(' ').flatMap((w, k) => {
+          const word = (
+            <span className="hero__word" key={k}>
+              {[...w].map((c, m) => (
+                <span className="ch" key={m}>{c}</span>
+              ))}
+            </span>
+          )
+          return k ? [' ', word] : [word]
+        })
+        return em ? <em key={j}>{words}</em> : <span key={j}>{words}</span>
+      })}
+    </span>
+  ))
+}
+
 /* Brand film on a card tilted back in 3D; the Home timeline swings it upright
-   to full bleed on scroll. Muted, streams only near the viewport and pauses
-   off-screen; reduced-motion visitors get it flat with a play button. */
+   to full bleed on scroll. Starts muted, streams only near the viewport and
+   pauses off-screen; reduced-motion visitors get it flat with a play button.
+   The sound button only appears when the file actually carries an audio track. */
 function Film() {
   const video = useRef(null)
   const [playing, setPlaying] = useState(false)
+  const [hasSound, setHasSound] = useState(false)
+  const [muted, setMuted] = useState(true)
   const userPaused = useRef(false)
 
   useEffect(() => {
@@ -41,7 +88,20 @@ function Film() {
       { rootMargin: '200px 0px' },
     )
     io.observe(v)
-    return () => io.disconnect()
+    // no standard "has audio" flag: Firefox, Safari and Chromium each expose their own
+    const probe = () => {
+      if (!(v.mozHasAudio || v.audioTracks?.length > 0 || v.webkitAudioDecodedByteCount > 0)) return
+      setHasSound(true)
+      v.removeEventListener('loadeddata', probe)
+      v.removeEventListener('timeupdate', probe)
+    }
+    v.addEventListener('loadeddata', probe)
+    v.addEventListener('timeupdate', probe)
+    return () => {
+      io.disconnect()
+      v.removeEventListener('loadeddata', probe)
+      v.removeEventListener('timeupdate', probe)
+    }
   }, [])
 
   const toggle = () => {
@@ -53,6 +113,12 @@ function Film() {
       userPaused.current = true
       v.pause()
     }
+  }
+
+  const toggleSound = () => {
+    const v = video.current
+    v.muted = !v.muted
+    setMuted(v.muted)
   }
 
   return (
@@ -82,10 +148,25 @@ function Film() {
           <div className="film__shade" aria-hidden="true" />
           <div className="film__meta wrap">
             <p className="film__caption">From the centres of produce — a short film.</p>
-            <button type="button" className="film__toggle" onClick={toggle} aria-label={playing ? 'Pause film' : 'Play film'}>
-              <span className={`film__icon ${playing ? 'is-playing' : ''}`} aria-hidden="true" />
-              <span>{playing ? 'Pause' : 'Play'}</span>
-            </button>
+            <div className="film__controls">
+              <button type="button" className="film__toggle" onClick={toggle} aria-label={playing ? 'Pause film' : 'Play film'}>
+                <span className={`film__icon ${playing ? 'is-playing' : ''}`} aria-hidden="true" />
+                <span>{playing ? 'Pause' : 'Play'}</span>
+              </button>
+              {hasSound && (
+                <button type="button" className="film__toggle" onClick={toggleSound} aria-pressed={!muted} aria-label={muted ? 'Turn sound on' : 'Turn sound off'}>
+                  <svg className="film__speaker" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+                    <path d="M3 9h4l5-4v14l-5-4H3z" fill="currentColor" />
+                    {muted ? (
+                      <path d="M16 9l5 6M21 9l-5 6" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="square" />
+                    ) : (
+                      <path d="M15.5 9a4.5 4.5 0 0 1 0 6M18 6.5a8 8 0 0 1 0 11" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="square" />
+                    )}
+                  </svg>
+                  <span>{muted ? 'Sound off' : 'Sound on'}</span>
+                </button>
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -108,31 +189,101 @@ export default function Home() {
       const q = (s) => root.current.querySelector(s)
       const qa = (s) => root.current.querySelectorAll(s)
 
-      /* ---------- HERO intro (all sizes) ---------- */
+      /* ---------- HERO: film scrubbed by scroll, headline written over it ---------- */
       mm.add('(prefers-reduced-motion: no-preference)', () => {
-        // held until the preloader lifts, so the reveal plays in view
+        const v = q('.hero__film video')
+        const chapters = [...qa('.hero__chapter')]
+        const chars = chapters.map((c) => [...c.querySelectorAll('.ch')])
+        const extras = (i) => chapters[i].querySelectorAll('.hero__kicker, .hero__body')
+        const shown = chars.map(() => -1)
+        // switch on the first n characters; the newest carries the pen stroke
+        const write = (i, n) => {
+          n = Math.round(n)
+          if (n === shown[i]) return
+          shown[i] = n
+          chars[i].forEach((c, k) => {
+            c.classList.toggle('is-on', k < n)
+            c.classList.toggle('is-pen', k === n - 1 && n < chars[i].length)
+          })
+        }
+        const pen = { film: 0, a: 0, b: 0, c: 0 }
+
+        // the whole file is fetched up front so every seek is served from memory
+        const url = `/media/video/hero-${window.matchMedia('(max-aspect-ratio: 3/4)').matches ? 'tall' : 'wide'}.mp4`
+        let blob = null
+        let dead = false
+        fetch(url)
+          .then((r) => (r.ok ? r.blob() : Promise.reject(r.status)))
+          .then((b) => {
+            if (dead) return
+            blob = URL.createObjectURL(b)
+            v.src = blob
+          })
+          .catch(() => !dead && (v.src = url))
+        // seeks are queued: one at a time, always toward the latest scroll position
+        const seek = () => {
+          if (!v.duration || v.seeking) return
+          const t = Math.min(pen.film * v.duration, v.duration - 0.05)
+          if (Math.abs(v.currentTime - t) > 0.02) v.currentTime = t
+        }
+        v.addEventListener('seeked', seek)
+        v.addEventListener('loadeddata', seek)
+        // iOS only decodes frames after a gesture-started play
+        const prime = () => v.play().then(() => v.pause()).catch(() => {})
+        window.addEventListener('touchstart', prime, { once: true, passive: true })
+
+        // chapter one is written on arrival, held until the preloader lifts
         const intro = gsap.timeline({ delay: 0.15, paused: !introReady() })
         intro
-          .fromTo(qa('.hero__line > span'), { yPercent: 115, y: 0 }, { yPercent: 0, y: 0, clearProps: 'transform', duration: 1.4, ease: 'expo.out', stagger: 0.09 })
-          .fromTo(q('.hero__frame-in'), { clipPath: 'inset(100% 0% 0% 0%)' }, { clipPath: 'inset(0% 0% 0% 0%)', duration: 1.5, ease: 'expo.inOut' }, 0.1)
-          .fromTo(q('.hero__frame img'), { scale: 1.45 }, { scale: 1, duration: 2.6, ease: 'expo.out' }, 0.1)
-          .fromTo(qa('.hero__eyebrow > span, .hero__aside > *, .hero__scroll > *'), { autoAlpha: 0, y: 24 }, { autoAlpha: 1, y: 0, stagger: 0.08, duration: 1 }, 0.7)
-        return onIntro(() => intro.play())
-      })
+          .fromTo(qa('.hero__eyebrow > span'), { autoAlpha: 0, y: 24 }, { autoAlpha: 1, y: 0, stagger: 0.08, duration: 1 }, 0)
+          .fromTo(chapters[0].querySelector('.hero__kicker'), { autoAlpha: 0, y: 16 }, { autoAlpha: 1, y: 0, duration: 0.8 }, 0.1)
+          .to(pen, { a: chars[0].length, duration: 1.7, ease: 'none', onUpdate: () => write(0, pen.a) }, 0.25)
+          .fromTo(
+            [chapters[0].querySelector('.hero__body'), q('.hero__ctas'), ...qa('.hero__scroll > *')],
+            { autoAlpha: 0, y: 24 },
+            { autoAlpha: 1, y: 0, stagger: 0.08, duration: 1 },
+            1.3,
+          )
+        const offIntro = onIntro(() => intro.play())
 
-      /* ---------- HERO pinned expansion (desktop) ---------- */
-      mm.add('(min-width: 1000px) and (prefers-reduced-motion: no-preference)', () => {
+        // chapters two and three are written by the scroll itself
         const tl = gsap.timeline({
-          scrollTrigger: { trigger: q('.hero'), start: 'top top', end: '+=140%', pin: true, scrub: 0.6, anticipatePin: 1 },
+          defaults: { ease: 'none' },
+          onUpdate: () => {
+            write(1, pen.b)
+            write(2, pen.c)
+            seek()
+          },
+          scrollTrigger: {
+            trigger: q('.hero'),
+            start: 'top top',
+            end: '+=320%',
+            pin: true,
+            scrub: 0.6,
+            anticipatePin: 1,
+            onUpdate: (self) => self.progress > 0.01 && intro.progress() < 1 && intro.progress(1),
+          },
         })
-        tl.fromTo(q('.hero__frame'), { clipPath: 'inset(13% 5% 24% 63%)' }, { clipPath: 'inset(0% 0% 0% 0%)', ease: 'power2.inOut', duration: 1 }, 0)
-          .fromTo(q('.hero__frame-in'), { scale: 1.18 }, { scale: 1, ease: 'none', duration: 1 }, 0)
-          .to(q('.hero__shade'), { opacity: 1, duration: 0.6 }, 0.35)
-          .to(q('.hero__line--1'), { xPercent: -30, autoAlpha: 0, duration: 0.6 }, 0)
-          .to(q('.hero__line--2'), { xPercent: 25, autoAlpha: 0, duration: 0.6 }, 0.04)
-          .to(q('.hero__line--3'), { xPercent: -20, autoAlpha: 0, duration: 0.6 }, 0.08)
-          .to(qa('.hero__aside, .hero__eyebrow, .hero__scroll'), { autoAlpha: 0, duration: 0.3 }, 0)
-          .fromTo(qa('.hero__reveal > *'), { autoAlpha: 0, y: 60 }, { autoAlpha: 1, y: 0, stagger: 0.08, duration: 0.45 }, 0.55)
+        tl.to(pen, { film: 1, duration: 0.94 }, 0)
+          .to(q('.hero__scroll'), { autoAlpha: 0, duration: 0.05 }, 0.02)
+          .to(chapters[0], { autoAlpha: 0, yPercent: -10, duration: 0.07 }, 0.13)
+          .fromTo(extras(1), { autoAlpha: 0, y: 20 }, { autoAlpha: 1, y: 0, stagger: 0.05, duration: 0.06 }, 0.23)
+          .to(pen, { b: chars[1].length, duration: 0.17 }, 0.25)
+          .to(chapters[1], { autoAlpha: 0, yPercent: -10, duration: 0.06 }, 0.52)
+          .fromTo(extras(2), { autoAlpha: 0, y: 20 }, { autoAlpha: 1, y: 0, stagger: 0.05, duration: 0.06 }, 0.61)
+          .to(pen, { c: chars[2].length, duration: 0.16 }, 0.63)
+          .to({}, { duration: 0.06 }, 0.94) // hold the finished pack before unpinning
+
+        return () => {
+          dead = true
+          offIntro()
+          v.removeEventListener('seeked', seek)
+          v.removeEventListener('loadeddata', seek)
+          window.removeEventListener('touchstart', prime)
+          v.removeAttribute('src')
+          v.load()
+          if (blob) URL.revokeObjectURL(blob)
+        }
       })
 
       /* ---------- Film: tilted card swings upright to full bleed ---------- */
@@ -271,10 +422,8 @@ export default function Home() {
     <div ref={root} className="home">
       {/* ================= HERO ================= */}
       <section className="hero" aria-labelledby="hero-title">
-        <div className="hero__frame">
-          <div className="hero__frame-in">
-            <Photo name="hands-bowl" alt="A woman holds a small bowl of freshly sourced spice in her cupped hands" sizes="100vw" priority />
-          </div>
+        <div className="hero__film" aria-hidden="true">
+          <video poster="/media/video/hero-poster.webp" muted playsInline preload="auto" disablePictureInPicture tabIndex={-1} />
         </div>
         <div className="hero__shade" aria-hidden="true" />
         <div className="hero__content wrap">
@@ -282,31 +431,30 @@ export default function Home() {
             <span>Greenshadow Agri-Allied Pvt. Ltd.</span>
             <span>Thiruvananthapuram · Kerala · India</span>
           </p>
-          <h1 id="hero-title" className="hero__title">
-            <span className="hero__line hero__line--1"><span>From the centres</span></span>{' '}
-            <span className="hero__line hero__line--2"><span>of produce</span></span>{' '}
-            <span className="hero__line hero__line--3"><span><em>to global</em> markets.</span></span>
+          <h1 id="hero-title" className="sr-only">
+            From the centres of produce, ground in our own facility, to global markets.
           </h1>
-          <div className="hero__aside">
-            <p>
-              Spices, nuts and masalas — sourced directly from growers, cleaned, graded and low-temperature ground in our
-              own facility, about 25 km from Vizhinjam International Seaport.
-            </p>
+          <div className="hero__chapters">
+            {CHAPTERS.map((c) => (
+              <div className="hero__chapter" key={c.kicker}>
+                <p className="hero__kicker">{c.kicker}</p>
+                <p className="hero__written" aria-hidden="true">
+                  <Written lines={c.lines} />
+                </p>
+                <p className="hero__body">{c.body}</p>
+              </div>
+            ))}
+          </div>
+          <div className="hero__foot">
             <div className="hero__ctas">
               <Button to="/products">Explore products</Button>
               <Button to="/contact" variant="ghost-light">Enquire for export</Button>
             </div>
+            <div className="hero__scroll" aria-hidden="true">
+              <span>Scroll</span>
+              <i />
+            </div>
           </div>
-          <div className="hero__scroll" aria-hidden="true">
-            <span>Scroll</span>
-            <i />
-          </div>
-        </div>
-        <div className="hero__reveal wrap" aria-hidden="true">
-          <p className="mono">Quality check · 01 of many</p>
-          <p className="hero__reveal-text">
-            The first quality check happens <em>at the point of procurement.</em>
-          </p>
         </div>
       </section>
 
@@ -436,7 +584,7 @@ export default function Home() {
         <div className="shelf wrap" aria-label="Greenshadow retail packs">
           {masalas.map((p) => (
             <TLink to="/products" className="shelf__item" key={p.slug}>
-              <img src={productImg(p.slug)} alt={`Greenshadow ${p.name}, 100 g pack`} loading="lazy" decoding="async" />
+              <img className={productCls(p.slug)} src={productImg(p.slug)} alt={`Greenshadow ${p.name}, 100 g pack`} loading="lazy" decoding="async" />
               <span>{p.name}</span>
             </TLink>
           ))}

@@ -50,8 +50,8 @@ export default function About() {
         title={<>A spice company rooted in <em>Kerala.</em></>}
         lead="Greenshadow Agri-Allied Private Limited was incorporated on 5 June 2020 in Thiruvananthapuram to source, process and export spices, nuts and agricultural products."
         meta={[['Incorporated', '2020'], ['Based in', 'Anavoor'], ['Promoter experience', '15+ yrs']]}
-        image="hands-bowl"
-        imageAlt="A woman holds a small decorated bowl of spice in her cupped hands"
+        image="pepper-vines"
+        imageAlt="Tall pepper vines climbing the trunks of a shaded plantation"
       />
 
       {/* Story */}
@@ -82,10 +82,10 @@ export default function About() {
           </div>
           <div className="story__images">
             <figure className="story__img story__img--a" data-clip>
-              <Photo name="farmer-field" alt="A farmer carries a freshly harvested bundle across a green field" sizes="(min-width: 900px) 40vw, 90vw" />
+              <Photo name="pepper-picker" alt="A woman reaches up into the leaves of a pepper vine to pick by hand" sizes="(min-width: 900px) 40vw, 90vw" />
             </figure>
             <figure className="story__img story__img--b" data-parallax="0.12">
-              <Photo name="nutmeg-mace" alt="A grower holds a basket of nutmeg and mace" sizes="(min-width: 900px) 28vw, 70vw" />
+              <Photo name="harvest-b" alt="A farmer carries a freshly cut sheaf through a tall green field" sizes="(min-width: 900px) 28vw, 70vw" />
             </figure>
           </div>
         </div>
@@ -169,7 +169,7 @@ export default function About() {
       {/* Impact */}
       <section className="impact wrap">
         <div className="impact__media" data-clip>
-          <Photo name="turmeric-a" alt="A woman holds fresh turmeric by a bowl of turmeric powder" sizes="(min-width: 900px) 40vw, 90vw" />
+          <Photo name="winnow-a" alt="A woman winnows seed in a bamboo tray against a blue-washed wall" sizes="(min-width: 900px) 40vw, 90vw" />
         </div>
         <div className="impact__text">
           <Eyebrow index="05">Local impact</Eyebrow>
@@ -185,7 +185,7 @@ export default function About() {
         </div>
       </section>
 
-      <CtaBand title="Grow with Greenshadow." body="Trade enquiries, sourcing partnerships and export orders — we would like to hear from you." image="elder-hills" imageAlt="An elderly woman from a hill community" />
+      <CtaBand title="Grow with Greenshadow." body="Trade enquiries, sourcing partnerships and export orders — we would like to hear from you." image="elder-tractor" imageAlt="An elderly grower with a long white beard stands beside a tractor" />
     </div>
   )
 }

@@ -77,8 +77,8 @@ export default function Process() {
         title={<>From raw harvest to <em>finished spice.</em></>}
         lead="An eight-stage flow documented from procurement to dispatch — every stage preceded and followed by stringent quality checks."
         meta={[['Stages', '08'], ['Quality checks', 'Every stage'], ['Grinding', 'Low-temp']]}
-        image="grain-check-a"
-        imageAlt="Grain falling between two hands during a quality check"
+        image="turmeric-farmer-a"
+        imageAlt="A farmer bends to tend turmeric plants growing in rows of dark soil"
       />
 
       {/* Sticky swap */}
@@ -172,7 +172,7 @@ export default function Process() {
         </ol>
       </section>
 
-      <CtaBand title="See the finished product." body="Explore whole spices, nuts, ground spices and masala blends from the Greenshadow catalogue." image="truck-loading" imageAlt="Sacks being loaded onto a truck for dispatch" />
+      <CtaBand title="See the finished product." body="Explore whole spices, nuts, ground spices and masala blends from the Greenshadow catalogue." image="chilli-girl-b" imageAlt="A smiling girl holds up a thick garland of fresh red chillies" />
     </div>
   )
 }

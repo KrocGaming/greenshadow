@@ -146,7 +146,7 @@ export default function Certifications() {
         </div>
       </section>
 
-      <CtaBand title="Need documents for onboarding?" body="Buyers and partners can request copies of registrations for vendor onboarding and due diligence." image="hands-bowl" imageAlt="Hands holding a small bowl of spice" />
+      <CtaBand title="Need documents for onboarding?" body="Buyers and partners can request copies of registrations for vendor onboarding and due diligence." image="turmeric-plants" imageAlt="Young turmeric plants rising from dark soil" />
 
       {open !== null && <CertViewer certs={certificates} index={open} onClose={close} onNav={nav} returnFocus={trigger.current} />}
     </div>
