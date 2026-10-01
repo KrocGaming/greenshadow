@@ -18,14 +18,14 @@ All company facts live in `src/data/` and are taken from the documents in `asses
 | `certificates/gsw.pdf` (brochure) | Product catalogue and product images, processing and QC flow, spice-care tips, contact details, ISO 9001:2015 statement |
 | `certificates/pitch deck .pdf` | 15+ years promoter experience, ≈25 km to Vizhinjam, own land, facility status, sourcing network, business model, USA/UAE focus, Sep 2026 launch |
 | `incorporation certificate.pdf`, `IE certificate.pdf`, `fssai latest .pdf`, `11_UDYAM.pdf`, `ICE gate -Certificate.pdf`, `apeda green.pdf`, `AD code(authorised dealer).pdf` | Certifications page, milestones, registered product scope, export markets |
-| `greenshadow-product-mockups/*` | Product images everywhere products appear — 16 pack mockups. Chilli Powder uses the last frame of the hero film; Coffee and Tea Powder still use the brochure photo until mockups are supplied |
+| `greenshadow-product-mockups/*` | Product images everywhere products appear — 16 pack mockups. Chilli Powder uses the last frame of the hero film. Coffee Powder and Tea Powder (in the brochure) are left off the site because they have no mockup |
 | `colour/*` | Photography — the 31 colour-graded photos used across the site |
 | `Main_index.mp4` | Home hero film, scrubbed by scroll (re-encoded with every frame a keyframe, plus a centre-cropped portrait cut for phones) |
 | `WhatsApp Image …5.24.24 PM.jpeg` | Logo. The other WhatsApp photos are the ungraded originals and are no longer published |
 
 ## Things the owner should review
 
-- **The hero film carries a Veo watermark** (bottom-right corner) and shows a "Kashmir Chilly Powder" pack, which is not one of the 19 products in the catalogue.
+- **The hero film carries a Veo watermark** (bottom-right corner) and shows a "Kashmir Chilly Powder" pack, which is not a product name in the brochure (the catalogue lists it as Chilli Powder).
 - **No factory or machinery photos were supplied.** The site uses the sourcing, grading and logistics photography. Add real facility photos to strengthen the Facility and Process pages.
 - **ISO 9001:2015 (No. 304920082406Q)** appears only in the brochure. No certificate copy was supplied, so the site lists it as "stated in company literature" and doesn't show it in the certificate viewer.
 - **APEDA** – the supplied file is an e-RCMC *application* (19 Dec 2025), so it's labelled "Application filed". Replace it with the issued RCMC when available.
