@@ -3,15 +3,14 @@
  * in the company brochure (gsw.pdf, pages 3–4). Descriptions are plain,
  * generic definitions of each spice; no grades, origins or specifications
  * are claimed beyond what the brochure states.
- * Images are the pack mockups (dark studio tiles); the two lines without a
- * mockup still use their brochure photo.
+ * Images are the pack mockups (dark studio tiles). The brochure's Coffee
+ * Powder and Tea Powder are left out: no pack mockup exists for them.
  */
 
 export const collections = [
   { id: 'whole', label: 'Whole spices & nuts' },
   { id: 'ground', label: 'Ground spices' },
   { id: 'masala', label: 'Masala blends' },
-  { id: 'beverage', label: 'Beverages' },
 ]
 
 export const products = [
@@ -32,13 +31,6 @@ export const products = [
   { slug: 'fish-masala', name: 'Fish Masala', col: 'masala', format: 'Blend', spec: 'Pack: 100 g', desc: 'A blend made for fish curries and fries.', uses: ['Fish curry', 'Fish fry', 'Seafood'] },
   { slug: 'chicken-masala', name: 'Chicken Masala', col: 'masala', format: 'Blend', spec: 'Pack: 100 g', desc: 'A blend made for chicken curries and roasts.', uses: ['Chicken curry', 'Roasts', 'Fry'] },
   { slug: 'meat-masala', name: 'Meat Masala', col: 'masala', format: 'Blend', spec: 'Pack: 100 g', desc: 'A robust blend made for meat curries.', uses: ['Meat curry', 'Roasts', 'Stews'] },
-  { slug: 'coffee-powder', name: 'Coffee Powder', col: 'beverage', format: 'Powder', desc: 'Ground coffee for brewing.', uses: ['Filter coffee', 'Beverages'] },
-  { slug: 'tea-powder', name: 'Tea Powder', col: 'beverage', format: 'Powder', desc: 'Tea for brewing.', uses: ['Chai', 'Beverages'] },
 ]
 
 export const productImg = (slug) => `/media/products/${slug}.webp`
-
-const BROCHURE_ONLY = new Set(['coffee-powder', 'tea-powder'])
-export const isMockup = (slug) => !BROCHURE_ONLY.has(slug)
-/* Class for a product <img>: mockups fill their tile, brochure photos sit on paper. */
-export const productCls = (slug) => (isMockup(slug) ? 'is-mockup' : '')

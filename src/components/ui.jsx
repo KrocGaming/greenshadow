@@ -1,7 +1,6 @@
 import { useRef, useEffect } from 'react'
 import { TLink } from './Transition'
 import { gsap } from '../lib/motion'
-import { isMockup } from '../data/products'
 
 /* Where the subject sits in photos that are off-centre, so cover crops keep it. */
 const FOCUS = {
@@ -36,12 +35,10 @@ export function Photo({ name, alt, sizes = '100vw', priority = false, className 
   )
 }
 
-/* Resolves "product:slug" or a photo name. */
+/* Resolves "product:slug" (the uncropped pack mockup) or a photo name. */
 export function Media({ src, alt, sizes, className, priority }) {
   if (src.startsWith('product:')) {
-    const slug = src.slice(8)
-    const mock = isMockup(slug)
-    return <img className={`${className ?? ''} is-product ${mock ? 'is-mockup' : ''}`} src={`/media/products/${slug}${mock ? '-wide' : ''}.webp`} alt={alt} loading="lazy" decoding="async" />
+    return <img className={`${className ?? ''} is-product is-mockup`} src={`/media/products/${src.slice(8)}-wide.webp`} alt={alt} loading="lazy" decoding="async" />
   }
   return <Photo name={src} alt={alt} sizes={sizes} className={className} priority={priority} />
 }

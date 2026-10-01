@@ -57,7 +57,7 @@ export const stats = [
   { value: 15, suffix: '+', label: 'Years of promoter experience in the spice sector', src: 'DECK' },
   { value: 25, prefix: '≈', suffix: ' km', label: 'From the factory to Vizhinjam International Seaport', src: 'DECK' },
   { value: 2020, label: 'Year of incorporation under the Companies Act, 2013', src: 'INC', plain: true },
-  { value: 19, label: 'Product lines in the current catalogue', src: 'BRO' },
+  { value: 17, label: 'Product lines in the current catalogue', src: 'BRO' },
 ]
 
 export const milestones = [

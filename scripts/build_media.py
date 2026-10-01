@@ -4,7 +4,7 @@
 - Hero film   -> public/media/video/hero-{wide,tall}.mp4 + hero-poster.webp (from Main_index.mp4)
 - Logo        -> public/media/brand/logo-{dark,light}.png, small WebP copies for the page + favicon
 - Products    -> public/media/products/<slug>.webp (pack mockups in /assests/greenshadow-product-mockups;
-                 lines without a mockup fall back to the brochure crop from gsw.pdf)
+                 the brochure crops from gsw.pdf are only a fallback underneath them)
 - Certificates-> public/media/certs/<slug>-p<n>-{thumb,full}.webp
 
 Personal data is never published: FSSAI page with Aadhaar details and the
@@ -192,7 +192,7 @@ PRODUCTS_P3 = [
     ("black-pepper", 270, 160, 455), ("cardamom", 565, 160, 455), ("chukku", 865, 160, 455),
     ("white-pepper", 270, 495, 775), ("garam-masala-whole", 565, 508, 775), ("cinnamon-sticks", 870, 495, 748),
     ("anise-stars", 270, 805, 1075), ("clove", 565, 805, 1075), ("cashew-nuts", 865, 822, 1075),
-    ("nutmace", 270, 1105, 1385), ("coffee-powder", 565, 1105, 1385), ("tea-powder", 865, 1105, 1385),
+    ("nutmace", 270, 1105, 1385),
 ]
 PRODUCTS_P4 = [
     ("chilli-powder", 305, 180, 535, 270), ("coriander-powder", 590, 180, 535, 270), ("turmeric-powder", 865, 180, 535, 270),

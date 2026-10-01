@@ -6,7 +6,7 @@ import { loadHeroFilm, heroFilmUrl } from '../lib/heroFilm'
 import { Photo, Media, Button, TextLink, Eyebrow, CtaBand } from '../components/ui'
 import { TLink } from '../components/Transition'
 import { stats, process, facilityStatus, sourcing } from '../data/company'
-import { products, productImg, productCls } from '../data/products'
+import { products, productImg } from '../data/products'
 import { certificates } from '../data/certificates'
 import RouteDiagram from '../components/RouteDiagram'
 import HoverList from '../components/HoverList'
@@ -569,7 +569,7 @@ export default function Home() {
             Whole spices, nuts and signature masalas.
           </h2>
           <p className="lead" data-reveal>
-            Nineteen product lines — from Kerala black pepper and graded cardamom to ready-to-cook masala blends in 100 g
+            Seventeen product lines — from Kerala black pepper and graded cardamom to ready-to-cook masala blends in 100 g
             retail packs.
           </p>
         </div>
@@ -577,7 +577,7 @@ export default function Home() {
         <div className="shelf wrap" aria-label="Greenshadow retail packs">
           {masalas.map((p) => (
             <TLink to="/products" className="shelf__item" key={p.slug}>
-              <img className={productCls(p.slug)} src={productImg(p.slug)} alt={`Greenshadow ${p.name}, 100 g pack`} loading="lazy" decoding="async" />
+              <img className="is-mockup" src={productImg(p.slug)} alt={`Greenshadow ${p.name}, 100 g pack`} loading="lazy" decoding="async" />
               <span>{p.name}</span>
             </TLink>
           ))}

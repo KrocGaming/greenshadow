@@ -4,7 +4,7 @@ import { gsap, ScrollTrigger, useGSAP } from '../lib/motion'
 import { useSeo } from '../lib/seo'
 import { PageHero, Eyebrow, CtaBand, Arrow, TextLink } from '../components/ui'
 import { TLink } from '../components/Transition'
-import { products, collections, productImg, productCls } from '../data/products'
+import { products, collections, productImg } from '../data/products'
 
 export default function Products() {
   const root = useRef(null)
@@ -28,7 +28,6 @@ export default function Products() {
     { scope: grid, dependencies: [filter] },
   )
 
-  const isPack = (p) => productCls(p.slug) !== '' || p.spec?.startsWith('Pack')
   const count = (id) => (id === 'all' ? products.length : products.filter((p) => p.col === id).length)
 
   return (
@@ -37,7 +36,7 @@ export default function Products() {
         index="D"
         label="Products"
         title={<>The <em>catalogue.</em></>}
-        lead="Whole spices and nuts, ground spices, masala blends and beverages — as listed in the Greenshadow product brochure."
+        lead="Whole spices and nuts, ground spices and masala blends — as listed in the Greenshadow product brochure."
         meta={[['Product lines', String(products.length)], ['Retail pack', '100 g'], ['Cardamom', '8 · 7 · 6 Bold']]}
       />
 
@@ -57,7 +56,7 @@ export default function Products() {
             <li className="pcard" key={p.slug}>
               <article>
                 <div className="pcard__media">
-                  <img className={productCls(p.slug)} src={productImg(p.slug)} alt={`${p.name}${isPack(p) ? ' — Greenshadow retail pack' : ''}`} loading="lazy" decoding="async" />
+                  <img className="is-mockup" src={productImg(p.slug)} alt={`${p.name} — Greenshadow retail pack`} loading="lazy" decoding="async" />
                   <span className="pcard__i mono">{String(i + 1).padStart(2, '0')}</span>
                 </div>
                 <div className="pcard__body">
